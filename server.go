@@ -23,6 +23,14 @@ type Server struct {
 	Coils            []byte
 	HoldingRegisters []uint16
 	InputRegisters   []uint16
+	LookFunc         LookValueFunc
+}
+
+type LookValueFunc interface {
+	DiscreteInputsFun(addr int, val []uint16) (err error)
+	CoilsFun(addr int, val []uint16) (err error)
+	HoldingRegistersFun(addr int, val []uint16) (err error)
+	InputRegistersFun(addr int, val []uint16) (err error)
 }
 
 // Request contains the connection and Modbus frame.

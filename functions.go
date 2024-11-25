@@ -72,6 +72,9 @@ func WriteSingleCoil(s *Server, frame Framer) ([]byte, *Exception) {
 		value = 1
 	}
 	s.Coils[register] = byte(value)
+	if s.LookFunc != nil {
+		s.LookFunc.CoilsFun(register, []uint16{value})
+	}
 	return frame.GetData()[0:4], &Success
 }
 
@@ -79,6 +82,9 @@ func WriteSingleCoil(s *Server, frame Framer) ([]byte, *Exception) {
 func WriteHoldingRegister(s *Server, frame Framer) ([]byte, *Exception) {
 	register, value := registerAddressAndValue(frame)
 	s.HoldingRegisters[register] = value
+	if s.LookFunc != nil {
+		s.LookFunc.HoldingRegistersFun(register, []uint16{value})
+	}
 	return frame.GetData()[0:4], &Success
 }
 
@@ -133,7 +139,9 @@ func WriteHoldingRegisters(s *Server, frame Framer) ([]byte, *Exception) {
 	} else {
 		exception = &IllegalDataAddress
 	}
-
+	if s.LookFunc != nil {
+		s.LookFunc.HoldingRegistersFun(register, values)
+	}
 	return data, exception
 }
 
