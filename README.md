@@ -36,25 +36,48 @@ Create a Modbus TCP Server (Slave):
 package main
 
 import (
+	"fmt"
+	"github.com/zoneBen/mbserver"
 	"log"
 	"time"
-
-	"github.com/tbrandon/mbserver"
 )
 
+type lookFunc struct {
+}
+
+func (a *lookFunc) DiscreteInputsFun(addr int, val []uint16) (err error) {
+	fmt.Printf("%d %02X", addr, val)
+	return
+}
+func (a *lookFunc) CoilsFun(addr int, val []uint16) (err error) {
+	fmt.Printf("%d %02X", addr, val)
+	return
+}
+func (a *lookFunc) HoldingRegistersFun(addr int, val []uint16) (err error) {
+	fmt.Printf("%d %02X", addr, val)
+	return
+}
+func (a *lookFunc) InputRegistersFun(addr int, val []uint16) (err error) {
+	fmt.Printf("%d %02X", addr, val)
+	return
+}
+
 func main() {
-	serv := mbserver.NewServer()
-	err := serv.ListenTCP("127.0.0.1:1502")
+	var lo lookFunc
+	s := mbserver.NewServer()
+	s.LookFunc = &lo
+	err := s.ListenTCP("127.0.0.1:1502")
 	if err != nil {
 		log.Printf("%v\n", err)
 	}
-	defer serv.Close()
+	defer s.Close()
 
 	// Wait forever
 	for {
 		time.Sleep(1 * time.Second)
 	}
 }
+
 ```
 The server will continue to listen until killed (&lt;ctrl>-c).
 Modbus typically uses port 502 (standard users require special permissions to listen on port 502). Change the port number as required.
